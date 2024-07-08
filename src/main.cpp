@@ -1,7 +1,3 @@
-// SPDX-FileCopyrightText: 2022 Limor Fried for Adafruit Industries
-//
-// SPDX-License-Identifier: MIT
-
 #include <Arduino.h>
 #include "Adafruit_MAX1704X.h"
 #include <Adafruit_NeoPixel.h>
@@ -36,54 +32,46 @@ void setup() {
   pinMode(1, INPUT_PULLDOWN);
   pinMode(2, INPUT_PULLDOWN);
 
-  // Configure Anolog input A0
-
 }
 
 int j = 0;
 
 void loop() {
-  // Serial.println("**********************");
 
   if (j % 2 == 0) {
     canvas.fillScreen(ST77XX_BLACK);
     canvas.setCursor(0, 17);
-    canvas.setTextColor(ST77XX_RED);
-    canvas.println("Adafruit Feather");
-    canvas.setTextColor(ST77XX_GREEN); 
+    canvas.setTextColor(ST77XX_BLUE);
+    canvas.print("Planter ");
+    canvas.setTextColor(ST77XX_GREEN);
+    canvas.println("ONE");
+
+    canvas.setTextColor(ST77XX_ORANGE); 
+    canvas.print("Temperature: ");
+    canvas.setTextColor(ST77XX_WHITE);
+    canvas.println("25.5 C");  // TODO: Read from sensor
+
+    canvas.setTextColor(ST77XX_ORANGE); 
+    canvas.print("Humidity: ");
+    canvas.setTextColor(ST77XX_WHITE);
+    canvas.println("50%");  // TODO: Read from sensor
+
+    uint16_t analog_read = analogRead(A0);
+    float soilMoisture = map(analog_read, 1000, 3000, 100., 0.);  // TODO: Fix this
+
+    canvas.setTextColor(ST77XX_GREEN);
+    canvas.print("Soil Moisture: ");
+    canvas.setTextColor(ST77XX_WHITE);
+    canvas.print(soilMoisture);
+    canvas.println("%");
+
+    canvas.setTextColor(ST77XX_CYAN);
     canvas.print("Battery: ");
     canvas.setTextColor(ST77XX_WHITE);
     canvas.print(lipo.cellVoltage(), 1);
     canvas.print(" V  /  ");
     canvas.print(lipo.cellPercent(), 0);
     canvas.println("%");
-    canvas.setTextColor(ST77XX_BLUE); 
-    canvas.print("I2C: ");
-    canvas.setTextColor(ST77XX_WHITE);
-    canvas.print("Buttons: ");
-    // Serial.println(digitalRead(0));
-    // Serial.println(digitalRead(1));
-    // Serial.println(digitalRead(2));
-    if (!digitalRead(0)) {
-      canvas.print("D0, ");
-    }
-    if (digitalRead(1)) {
-      canvas.print("D1, ");
-    }
-    if (digitalRead(2)) {
-      canvas.print("D2, ");
-    }
-    canvas.println();
-    canvas.setTextColor(ST77XX_CYAN);
-    canvas.print("Time: ");
-    canvas.setTextColor(ST77XX_WHITE);
-    canvas.println(millis() / 1000);
-
-    // Print ADC value of A0 on canvas
-    canvas.setTextColor(ST77XX_MAGENTA);
-    canvas.print("A0: ");
-    canvas.setTextColor(ST77XX_WHITE);
-    canvas.println(analogRead(A0));
 
     display.drawRGBBitmap(0, 0, canvas.getBuffer(), 240, 135);
     pinMode(TFT_BACKLITE, OUTPUT);
